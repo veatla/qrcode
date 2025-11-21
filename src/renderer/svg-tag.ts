@@ -1,20 +1,22 @@
-import Utils from "./utils";
+import type { QRCodeResult } from "../core/qrcode";
+import type { Options, QrCodeCallback } from "../server";
+import * as Utils from "./utils";
 
-function getColorAttrib(color, attrib) {
+function getColorAttrib(color: Utils.Color, attrib: string) {
     const alpha = color.a / 255;
     const str = attrib + '="' + color.hex + '"';
 
     return alpha < 1 ? str + " " + attrib + '-opacity="' + alpha.toFixed(2).slice(1) + '"' : str;
 }
 
-function svgCmd(cmd, x, y) {
+function svgCmd(cmd: string, x: number, y?: number) {
     let str = cmd + x;
     if (typeof y !== "undefined") str += " " + y;
 
     return str;
 }
 
-function qrToPath(data, size, margin) {
+function qrToPath(data: Uint8Array<ArrayBuffer>, size: number, margin: number) {
     let path = "";
     let moveBy = 0;
     let newRow = false;
@@ -48,7 +50,7 @@ function qrToPath(data, size, margin) {
     return path;
 }
 
-export const render = function render(qrData, options, cb) {
+export const render = function render(qrData: QRCodeResult, options: Options, cb?: QrCodeCallback) {
     const opts = Utils.getOptions(options);
     const size = qrData.modules.size;
     const data = qrData.modules.data;
