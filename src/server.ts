@@ -9,7 +9,7 @@ import type { Color } from "./renderer/utils";
 export type QrCodeCallback = (err: unknown, data?: string | Buffer<ArrayBuffer>) => void;
 
 export type RenderTypes = "svg" | "txt" | "utf8" | "png" | "image/png" | "terminal";
-export type Options<Types extends RenderTypes = RenderTypes> = {
+export type Options<Types extends RenderTypes = "svg" | "txt" | "utf8" | "png" | "image/png" | "terminal"> = {
     errorCorrectionLevel?: string | ErrorCorrectionType;
     type?: Types;
     color?: {
@@ -20,33 +20,35 @@ export type Options<Types extends RenderTypes = RenderTypes> = {
     width?: number | null;
     scale?: number | null;
     small?: boolean;
+    inverse?: boolean;
     version?: string | number;
     toSJISFunc?: (value: string) => number;
     maskPattern?: string | number;
     rendererOpts?: {
         width?: number;
         height?: number;
+        quality?: number;
     };
 };
-function checkParams<Types extends RenderTypes = RenderTypes>(text: string, opts: Options<Types>, cb: QrCodeCallback | Options<Types> | null) {
+function checkParams<Types extends RenderTypes = RenderTypes>(text: string, opts: Options<Types>, cb?: QrCodeCallback) {
     if (typeof text === "undefined") {
         throw new Error("String required as first argument");
     }
 
-    if (typeof cb === "undefined") {
-        cb = opts;
-        opts = {};
-    }
+    // if (typeof cb === "undefined") {
+    //     cb = opts;
+    //     opts = {};
+    // }
 
     if (typeof cb !== "function") {
         if (!canPromise()) throw new Error("Callback required as last argument");
         else {
             opts = cb || {};
-            cb = null;
+            cb = undefined;
         }
     }
 
-    return { opts: opts, cb: cb ?? undefined };
+    return { opts: opts, cb: cb };
 }
 
 function getTypeFromFilename(path: string) {
@@ -82,21 +84,19 @@ function getStringRendererFromType(type: RenderTypes) {
             return Utf8Renderer;
     }
 }
+interface RenderFunction {
+    (renderFunc: (data: QRCode.QRCodeResult, opts: Options, cb: QrCodeCallback) => void, text: string, opts: Options, cb?: QrCodeCallback): any;
+    (renderFunc: (data: QRCode.QRCodeResult, opts: Options, cb: QrCodeCallback) => void, text: string, opts: Options, cb?: undefined): any;
+}
 
-function render(
-    renderFunc: (data: QRCode.QRCodeResult, opts: Options, cb: QrCodeCallback) => void,
-    text: string,
-    params: {
-        opts: Options;
-        cb?: QrCodeCallback;
-    },
-) {
-    if (!params.cb) {
-        return new Promise(function (resolve, reject) {
+const render: RenderFunction = function render(renderFunc, text, opts, cb) {
+    if (!cb) {
+        return new Promise<string | Buffer<ArrayBuffer>>((resolve, reject) => {
             try {
-                const data = QRCode.create(text, params.opts);
-                return renderFunc(data, params.opts, function (err, data) {
-                    return err ? reject(err) : resolve(data);
+                const data = QRCode.create(text, opts);
+                renderFunc(data, opts, (err, out) => {
+                    if (err) reject(err);
+                    else resolve(out as string | Buffer<ArrayBuffer>);
                 });
             } catch (e) {
                 reject(e);
@@ -105,58 +105,64 @@ function render(
     }
 
     try {
-        const data = QRCode.create(text, params.opts);
-        return renderFunc(data, params.opts, params.cb);
+        const data = QRCode.create(text, opts);
+        renderFunc(data, opts, cb);
     } catch (e) {
-        params.cb(e, "");
+        cb(e as Error, undefined);
     }
-}
+};
 
 export const create = QRCode.create;
 
-export const toString = function toString(text: string, opts: Options, cb: QrCodeCallback) {
+interface RenderToDataFunction<Types extends RenderTypes = "png" | "image/png" | "svg" | "txt" | "utf8" | "terminal"> {
+    (text: string, opts: Options<Types>, cb?: undefined): Promise<string | Buffer<ArrayBuffer>>;
+    (text: string, opts: Options<Types>, cb?: QrCodeCallback): void;
+}
+export const toString: RenderToDataFunction = function toString(text, opts, cb) {
     const params = checkParams(text, opts, cb);
     const type: RenderTypes = params.opts?.type ? params.opts.type : "png";
     const renderer = getStringRendererFromType(type);
-    return render(renderer.render, text, params);
+    return render(renderer.render, text, params.opts, params.cb);
 };
 
-export const toDataURL = function toDataURL(text: string, opts: Options<"png">, cb: QrCodeCallback) {
-    const params = checkParams<"png">(text, opts, cb);
+export const toDataURL: RenderToDataFunction<"png" | "image/png"> = (text, opts, cb) => {
+    const params = checkParams(text, opts, cb);
     const renderer = getRendererFromType(params.opts.type ?? "image/png");
-    return render(renderer.renderToDataURL, text, params);
+    return render(renderer.renderToDataURL, text, params.opts, params.cb);
 };
 
-export const toBuffer = function toBuffer(text: string, opts: Options, cb: QrCodeCallback) {
+export const toBuffer: RenderToDataFunction = (text, opts, cb?) => {
     const params = checkParams(text, opts, cb);
     const renderer = getRendererFromType(params.opts.type ?? "png");
-    return render(renderer.renderToBuffer, text, params);
+    return render(renderer.renderToBuffer, text, params.opts, params.cb);
 };
 
-export const toFile = function toFile(path: string, text: string, opts: Options, cb: QrCodeCallback) {
+interface RenderToFile<Types extends RenderTypes = "png" | "image/png" | "svg" | "txt" | "utf8" | "terminal"> {
+    (path: string, text: string, opts: Options<Types>, cb?: undefined): Promise<string | Buffer<ArrayBuffer>>;
+    (path: string, text: string, opts: Options<Types>, cb?: QrCodeCallback): void;
+}
+export const toFile: RenderToFile = function (path, text, opts, cb) {
     if (typeof path !== "string" || !(typeof text === "string" || typeof text === "object")) {
         throw new Error("Invalid argument");
     }
 
-    if (arguments.length < 3 && !canPromise()) {
-        throw new Error("Too few arguments provided");
-    }
+    if (arguments.length < 3 && !canPromise()) throw new Error("Too few arguments provided");
 
     const params = checkParams(text, opts, cb);
     const type = params.opts.type || (getTypeFromFilename(path) as RenderTypes);
     const renderer = getRendererFromType(type);
     const renderToFile = renderer.renderToFile.bind(null, path);
 
-    return render(renderToFile, text, params);
+    return render(renderToFile, text, params.opts, params.cb);
 };
 
-export const toFileStream = function toFileStream(stream: NodeJS.WritableStream, text: string, opts: Options) {
-    if (arguments.length < 2) {
-        throw new Error("Too few arguments provided");
-    }
+export function toFileStream(stream: NodeJS.WritableStream, text: string, opts: Options) {
+    if (arguments.length < 2) throw new Error("Too few arguments provided");
 
     const params = checkParams(text, opts, stream.emit.bind(stream, "error"));
+
     const renderer = PngRenderer; // Only png support for now
+
     const renderToFileStream = renderer.renderToFileStream.bind(null, stream);
-    render(renderToFileStream, text, params);
-};
+    return render(renderToFileStream, text, params.opts, params.cb);
+}

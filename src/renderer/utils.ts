@@ -1,3 +1,4 @@
+import type { QRCodeResult } from "../core/qrcode";
 import type { Options } from "../server";
 
 export type Color = {
@@ -68,38 +69,39 @@ export function getOptions(options?: Options) {
     };
 }
 
-export function getScale(qrSize, opts) {
-    return opts.width && opts.width >= qrSize + opts.margin * 2 ? opts.width / (qrSize + opts.margin * 2) : opts.scale;
+export function getScale(qrSize: number, opts: Options) {
+    return opts.width && opts.width >= qrSize + Number(opts.margin) * 2 ? opts.width / (qrSize + Number(opts.margin) * 2) : opts.scale;
 }
 
-export function getImageWidth(qrSize, opts) {
+export function getImageWidth(qrSize: number, opts: Options) {
     const scale = getScale(qrSize, opts);
-    return Math.floor((qrSize + opts.margin * 2) * scale);
+    return Math.floor((qrSize + Number(opts.margin) * 2) * Number(scale));
 }
 
-export function qrToImageData(imgData, qr, opts) {
+export function qrToImageData(imgData: Buffer<ArrayBufferLike> | ImageDataArray, qr: QRCodeResult, opts: Options) {
     const size = qr.modules.size;
     const data = qr.modules.data;
-    const scale = getScale(size, opts);
-    const symbolSize = Math.floor((size + opts.margin * 2) * scale);
-    const scaledMargin = opts.margin * scale;
-    const palette = [opts.color.light, opts.color.dark];
+    const scale = Number(getScale(size, opts));
+    const symbolSize = Math.floor((size + Number(opts.margin) * 2) * scale);
+    const scaledMargin = Number(opts.margin) * scale;
+    const palette = [opts.color?.light, opts.color?.dark].filter((v) => v !== undefined);
 
     for (let i = 0; i < symbolSize; i++) {
         for (let j = 0; j < symbolSize; j++) {
             let posDst = (i * symbolSize + j) * 4;
-            let pxColor = opts.color.light;
+            let pxColor = opts.color?.light;
 
             if (i >= scaledMargin && j >= scaledMargin && i < symbolSize - scaledMargin && j < symbolSize - scaledMargin) {
                 const iSrc = Math.floor((i - scaledMargin) / scale);
                 const jSrc = Math.floor((j - scaledMargin) / scale);
                 pxColor = palette[data[iSrc * size + jSrc] ? 1 : 0];
             }
-
-            imgData[posDst++] = pxColor.r;
-            imgData[posDst++] = pxColor.g;
-            imgData[posDst++] = pxColor.b;
-            imgData[posDst] = pxColor.a;
+            if (pxColor) {
+                imgData[posDst++] = pxColor.r;
+                imgData[posDst++] = pxColor.g;
+                imgData[posDst++] = pxColor.b;
+                imgData[posDst] = pxColor.a;
+            }
         }
     }
 }

@@ -17,11 +17,20 @@ const expectedDataURL = [
     "qVO5LQqTxRrFGKNUqxRon/scYo1ijFGqVYoxRrlGKNUqxRijVKsUYp1ijFGqVYoxRrlGKN",
     "UqxRijXKP0OHEepgrecVAAAAAElFTkSuQmCC",
 ].join("");
-QRCode.toDataURL("i am a pony!", {
-    errorCorrectionLevel: "L",
-    type: "image/png",
-}).then(function (url) {
-    console.log(url);
-    console.log(`---------`);
-    console.log(expectedDataURL);
-});
+QRCode.toDataURL(
+    "i am a pony!",
+    {
+        errorCorrectionLevel: "L",
+        type: "image/png",
+    },
+    (url) => {
+        console.log(url);
+        console.log(`---------`);
+        console.log(expectedDataURL);
+    },
+);
+// .then((url) => {
+//     console.log(url);
+//     console.log(`---------`);
+//     console.log(expectedDataURL);
+// });
