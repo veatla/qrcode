@@ -1,6 +1,6 @@
 # qrcode
 
-## Fork from https://github.com/soldair/node-qrcode
+### Fork from https://github.com/soldair/node-qrcode made by Ryan Day. adding typescript and refactoring project
 
 ## Usage
 
