@@ -1,0 +1,21 @@
+{
+  "name": "qrcode",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "pngjs": "^7.0.0"
+  },
+  "dependencies": {
+    "@types/pngjs": "^6.0.5",
+    "canvas": "^3.2.0",
+    "sinon": "^21.0.0",
+    "tap": "^21.1.5"
+  }
+}
