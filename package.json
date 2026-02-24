@@ -2,6 +2,7 @@
   "name": "@veatla/qrcode",
   "description": "QRCode / 2d Barcode api with both server side and client side support using canvas",
   "version": "1.5.4",
+  "private": false,
   "author": [
     "Ryan Day <soldair@gmail.com>",
     "Altayev Nurzhan <altaevnurzhan1@gmail.com>"
@@ -47,7 +48,7 @@
     "build",
     "dist"
   ],
-  "homepage": "http://github.com/soldair/node-qrcode",
+  "homepage": "http://github.com/veatla/qrcode",
   "license": "MIT",
   "scripts": {
     "format": "prettier --write .",
@@ -93,7 +94,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/soldair/node-qrcode.git"
+    "url": "git://github.com/veatla/qrcode.git"
   },
   "engines": {
     "node": ">=10.13.0"
