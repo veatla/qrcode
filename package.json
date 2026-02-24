@@ -1,8 +1,11 @@
 {
-  "name": "qrcode",
+  "name": "@veatla/qrcode",
   "description": "QRCode / 2d Barcode api with both server side and client side support using canvas",
   "version": "1.5.4",
-  "author": "Ryan Day <soldair@gmail.com>",
+  "author": [
+    "Ryan Day <soldair@gmail.com>",
+    "Altayev Nurzhan <altaevnurzhan1@gmail.com>"
+  ],
   "type": "module",
   "contributors": [
     "Vincenzo Greco <greco.vincenzo@gmail.com>",

@@ -2,10 +2,10 @@
 
 > QR code/2d barcode generator.
 
-[![Travis](https://img.shields.io/travis/soldair/node-qrcode.svg?style=flat-square)](http://travis-ci.org/soldair/node-qrcode)
+[![Travis](https://img.shields.io/travis/veatla/qrcode.svg?style=flat-square)](http://travis-ci.org/veatla/qrcode)
 [![npm](https://img.shields.io/npm/v/qrcode.svg?style=flat-square)](https://www.npmjs.com/package/qrcode)
 [![npm](https://img.shields.io/npm/dt/qrcode.svg?style=flat-square)](https://www.npmjs.com/package/qrcode)
-[![npm](https://img.shields.io/npm/l/qrcode.svg?style=flat-square)](https://github.com/soldair/node-qrcode/blob/master/license)
+[![npm](https://img.shields.io/npm/l/qrcode.svg?style=flat-square)](https://github.com/veatla/qrcode/blob/master/license)
 
 - [Highlights](#highlights)
 - [Installation](#installation)
@@ -115,14 +115,10 @@ QRCode.toCanvas(canvas, "sample text", function (error) {
 
 <script src="/build/qrcode.js"></script>
 <script>
-  QRCode.toCanvas(
-    document.getElementById("canvas"),
-    "sample text",
-    function (error) {
-      if (error) console.error(error);
-      console.log("success!");
-    },
-  );
+  QRCode.toCanvas(document.getElementById("canvas"), "sample text", function (error) {
+    if (error) console.error(error);
+    console.log("success!");
+  });
 </script>
 ```
 
@@ -202,13 +198,9 @@ Error level can be set through `options.errorCorrectionLevel` property.<br>
 If not specified, the default value is `M`.
 
 ```javascript
-QRCode.toDataURL(
-  "some text",
-  { errorCorrectionLevel: "H" },
-  function (err, url) {
-    console.log(url);
-  },
-);
+QRCode.toDataURL("some text", { errorCorrectionLevel: "H" }, function (err, url) {
+  console.log(url);
+});
 ```
 
 ## QR Code capacity
@@ -872,7 +864,7 @@ This lib is based on "QRCode for JavaScript" which Kazuhiko Arase thankfully MIT
 
 ## License
 
-[MIT](https://github.com/soldair/node-qrcode/blob/master/license)
+[MIT](https://github.com/veatla/qrcode/blob/master/license)
 
 The word "QR Code" is registered trademark of:<br>
 DENSO WAVE INCORPORATED
