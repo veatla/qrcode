@@ -1,151 +1,267 @@
 import canPromise from "./can-promise";
-import * as QRCode from "./core/qrcode";
+import * as QRCodeCore from "./core/qrcode";
 import * as CanvasRenderer from "./renderer/canvas";
 import * as SvgRenderer from "./renderer/svg-tag";
 import * as RendererUtils from "./renderer/utils";
 import type { QRCodeCreateResult } from "./core/qrcode";
 import type { CanvasLike } from "./renderer/canvas";
+import type { QRCodeOptions } from "./types";
 
 type RendererOptionsInput = Parameters<typeof RendererUtils.getOptions>[0];
 
-function renderCanvas(
-  renderFunc: (
-    data: QRCodeCreateResult,
-    canvas: CanvasLike | undefined,
-    opts?: unknown,
-  ) => CanvasLike | string,
+type RenderFunc = (
+  data: QRCodeCreateResult,
   canvas: CanvasLike | undefined,
+  opts?: RendererOptionsInput,
+) => CanvasLike | string;
+
+type Callback = (err: Error | null, result: CanvasLike | string | null) => void;
+
+/** Public API overloads for toCanvas / toDataURL / toString (without bound renderFunc) */
+type ToRenderMethod = {
+  (text: string, cb: Callback): void;
+  (text: string, opts: RendererOptionsInput, cb: Callback): void;
+  (canvas: CanvasLike, text: string, cb: Callback): void;
+  (canvas: CanvasLike, text: string, opts: RendererOptionsInput, cb: Callback): void;
+  (text: string): Promise<CanvasLike | string>;
+  (text: string, opts: RendererOptionsInput): Promise<CanvasLike | string>;
+  (canvas: CanvasLike, text: string): Promise<CanvasLike | string>;
+  (canvas: CanvasLike, text: string, opts: RendererOptionsInput): Promise<CanvasLike | string>;
+};
+
+function renderWithTextCb(renderFunc: RenderFunc, text: string, cb: Callback): void {
+  try {
+    const data = QRCodeCore.create(text);
+    cb(null, renderFunc(data, undefined, undefined));
+  } catch (e) {
+    cb(e as Error, null);
+  }
+}
+
+function renderWithTextOptsCb(
+  renderFunc: RenderFunc,
   text: string,
-  opts: unknown,
-  cb: (err: Error | null, result: CanvasLike | string) => void,
-): void;
-function renderCanvas(
-  renderFunc: (
-    data: QRCodeCreateResult,
-    canvas: CanvasLike | undefined,
-    opts?: unknown,
-  ) => CanvasLike | string,
-  canvas: CanvasLike | undefined,
+  opts: RendererOptionsInput,
+  cb: Callback,
+): void {
+  try {
+    const data = QRCodeCore.create(text, opts as QRCodeOptions);
+    cb(null, renderFunc(data, undefined, opts));
+  } catch (e) {
+    cb(e as Error, null);
+  }
+}
+
+function renderWithCanvasTextCb(
+  renderFunc: RenderFunc,
+  canvas: CanvasLike,
   text: string,
-  opts?: unknown,
-): Promise<CanvasLike | string>;
-function renderCanvas(
-  renderFunc: (
-    data: QRCodeCreateResult,
-    canvas: CanvasLike | undefined,
-    opts?: unknown,
-  ) => CanvasLike | string,
-  ...args: unknown[]
-): Promise<CanvasLike | string> | void {
-  const argsList = [].slice.call(arguments, 1) as unknown[];
-  const argsNum = argsList.length;
-  const isLastArgCb = typeof argsList[argsNum - 1] === "function";
-
-  if (!isLastArgCb && !canPromise()) {
-    throw new Error("Callback required as last argument");
+  cb: Callback,
+): void {
+  try {
+    const data = QRCodeCore.create(text);
+    cb(null, renderFunc(data, canvas, undefined));
+  } catch (e) {
+    cb(e as Error, null);
   }
+}
 
-  if (isLastArgCb) {
-    let canvasArg: CanvasLike | undefined = argsList[0] as
-      | CanvasLike
-      | undefined;
-    let textArg: string = argsList[1] as string;
-    let optsArg: unknown = argsList[2];
-    let cbArg: (err: Error | null, result: CanvasLike | string | null) => void =
-      argsList[argsNum - 1] as (
-        err: Error | null,
-        result: CanvasLike | string | null,
-      ) => void;
-
-    if (argsNum < 2) {
-      throw new Error("Too few arguments provided");
-    }
-
-    if (argsNum === 2) {
-      cbArg = argsList[1] as (
-        err: Error | null,
-        result: CanvasLike | string | null,
-      ) => void;
-      textArg = argsList[0] as string;
-      canvasArg = optsArg = undefined;
-    } else if (argsNum === 3) {
-      if (
-        (argsList[0] as CanvasLike).getContext &&
-        typeof argsList[2] === "undefined"
-      ) {
-        cbArg = argsList[2] as unknown as (
-          err: Error | null,
-          result: CanvasLike | string | null,
-        ) => void;
-        optsArg = undefined;
-      } else {
-        cbArg = argsList[2] as (
-          err: Error | null,
-          result: CanvasLike | string | null,
-        ) => void;
-        optsArg = argsList[1];
-        textArg = argsList[0] as string;
-        canvasArg = undefined;
-      }
-    }
-
-    try {
-      const data = QRCode.create(
-        textArg,
-        optsArg as import("./types").QRCodeOptions,
-      );
-      cbArg(null, renderFunc(data, canvasArg, optsArg));
-    } catch (e) {
-      cbArg(e as Error, null);
-    }
-    return;
+function renderWithCanvasTextOptsCb(
+  renderFunc: RenderFunc,
+  canvas: CanvasLike,
+  text: string,
+  opts: RendererOptionsInput,
+  cb: Callback,
+): void {
+  try {
+    const data = QRCodeCore.create(text, opts as QRCodeOptions);
+    cb(null, renderFunc(data, canvas, opts));
+  } catch (e) {
+    cb(e as Error, null);
   }
+}
 
-  let canvasArg2 = argsList[0] as CanvasLike | undefined;
-  let textArg2 = argsList[1] as string;
-  let optsArg2 = argsList[2] as unknown;
-
-  if (argsNum < 1) {
-    throw new Error("Too few arguments provided");
-  }
-
-  if (argsNum === 1) {
-    textArg2 = argsList[0] as string;
-    canvasArg2 = optsArg2 = undefined;
-  } else if (argsNum === 2 && !(argsList[1] as CanvasLike).getContext) {
-    optsArg2 = argsList[1];
-    textArg2 = argsList[0] as string;
-    canvasArg2 = undefined;
-  }
-
+function renderWithText(renderFunc: RenderFunc, text: string): Promise<CanvasLike | string> {
   return new Promise((resolve, reject) => {
     try {
-      const data = QRCode.create(
-        textArg2,
-        optsArg2 as import("./types").QRCodeOptions,
-      );
-      resolve(renderFunc(data, canvasArg2, optsArg2));
+      const data = QRCodeCore.create(text);
+      resolve(renderFunc(data, undefined, undefined));
     } catch (e) {
       reject(e);
     }
   });
 }
 
-export const create = QRCode.create;
+function renderWithTextOpts(
+  renderFunc: RenderFunc,
+  text: string,
+  opts: RendererOptionsInput,
+): Promise<CanvasLike | string> {
+  return new Promise((resolve, reject) => {
+    try {
+      const data = QRCodeCore.create(text, opts as QRCodeOptions);
+      resolve(renderFunc(data, undefined, opts));
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
 
-export const toCanvas = renderCanvas.bind(
-  null,
-  (data: QRCodeCreateResult, canvas: CanvasLike | undefined, opts?: unknown) =>
-    CanvasRenderer.render(data, canvas, opts as RendererOptionsInput),
-);
-export const toDataURL = renderCanvas.bind(
-  null,
-  (data: QRCodeCreateResult, canvas: CanvasLike | undefined, opts?: unknown) =>
-    CanvasRenderer.renderToDataURL(data, canvas, opts as RendererOptionsInput),
-);
+function renderWithCanvasText(
+  renderFunc: RenderFunc,
+  canvas: CanvasLike,
+  text: string,
+): Promise<CanvasLike | string> {
+  return new Promise((resolve, reject) => {
+    try {
+      const data = QRCodeCore.create(text);
+      resolve(renderFunc(data, canvas, undefined));
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
 
-export const toString = renderCanvas.bind(
-  null,
-  (data: QRCodeCreateResult, _: CanvasLike | undefined, opts?: unknown) =>
-    SvgRenderer.render(data, opts as RendererOptionsInput),
-);
+function renderWithCanvasTextOpts(
+  renderFunc: RenderFunc,
+  canvas: CanvasLike,
+  text: string,
+  opts: RendererOptionsInput,
+): Promise<CanvasLike | string> {
+  return new Promise((resolve, reject) => {
+    try {
+      const data = QRCodeCore.create(text, opts as QRCodeOptions);
+      resolve(renderFunc(data, canvas, opts));
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+interface dispatchRender {
+  (renderFunc: RenderFunc, text: string, cb: Callback): void;
+  (renderFunc: RenderFunc, text: string, opts: RendererOptionsInput, cb: Callback): void;
+  (renderFunc: RenderFunc, canvas: CanvasLike, text: string, cb: Callback): void;
+  (
+    renderFunc: RenderFunc,
+    canvas: CanvasLike,
+    text: string,
+    opts: RendererOptionsInput,
+    cb: Callback,
+  ): void;
+  (renderFunc: RenderFunc, text: string): Promise<CanvasLike | string>;
+  (renderFunc: RenderFunc, text: string, opts: RendererOptionsInput): Promise<CanvasLike | string>;
+  (renderFunc: RenderFunc, canvas: CanvasLike, text: string): Promise<CanvasLike | string>;
+  (
+    renderFunc: RenderFunc,
+    canvas: CanvasLike,
+    text: string,
+    opts: RendererOptionsInput,
+  ): Promise<CanvasLike | string>;
+  (
+    renderFunc: RenderFunc,
+    arg0: string | CanvasLike,
+    arg1?: string | RendererOptionsInput | Callback,
+    arg2?: RendererOptionsInput | Callback,
+    arg3?: Callback,
+  ): Promise<CanvasLike | string> | void;
+}
+function dispatchRender(renderFunc: RenderFunc, text: string, cb: Callback): void;
+function dispatchRender(
+  renderFunc: RenderFunc,
+  text: string,
+  opts: RendererOptionsInput,
+  cb: Callback,
+): void;
+function dispatchRender(
+  renderFunc: RenderFunc,
+  canvas: CanvasLike,
+  text: string,
+  cb: Callback,
+): void;
+function dispatchRender(
+  renderFunc: RenderFunc,
+  canvas: CanvasLike,
+  text: string,
+  opts: RendererOptionsInput,
+  cb: Callback,
+): void;
+function dispatchRender(renderFunc: RenderFunc, text: string): Promise<CanvasLike | string>;
+function dispatchRender(
+  renderFunc: RenderFunc,
+  text: string,
+  opts: RendererOptionsInput,
+): Promise<CanvasLike | string>;
+function dispatchRender(
+  renderFunc: RenderFunc,
+  canvas: CanvasLike,
+  text: string,
+): Promise<CanvasLike | string>;
+function dispatchRender(
+  renderFunc: RenderFunc,
+  canvas: CanvasLike,
+  text: string,
+  opts: RendererOptionsInput,
+): Promise<CanvasLike | string>;
+function dispatchRender(
+  renderFunc: RenderFunc,
+  arg0: string | CanvasLike,
+  arg1?: string | RendererOptionsInput | Callback,
+  arg2?: RendererOptionsInput | Callback,
+  arg3?: Callback,
+): Promise<CanvasLike | string> | void {
+  if (typeof arg3 === "function") {
+    return renderWithCanvasTextOptsCb(
+      renderFunc,
+      arg0 as CanvasLike,
+      arg1 as string,
+      arg2 as RendererOptionsInput,
+      arg3,
+    );
+  }
+  if (typeof arg2 === "function") {
+    if (typeof (arg0 as CanvasLike).getContext === "function") {
+      return renderWithCanvasTextCb(renderFunc, arg0 as CanvasLike, arg1 as string, arg2);
+    }
+    return renderWithTextOptsCb(renderFunc, arg0 as string, arg1 as RendererOptionsInput, arg2);
+  }
+  if (typeof arg1 === "function") {
+    return renderWithTextCb(renderFunc, arg0 as string, arg1);
+  }
+  if (!canPromise()) {
+    throw new Error("Callback required as last argument");
+  }
+  if (typeof (arg0 as CanvasLike).getContext === "function") {
+    if (arg2 !== undefined) {
+      return renderWithCanvasTextOpts(
+        renderFunc,
+        arg0 as CanvasLike,
+        arg1 as string,
+        arg2 as RendererOptionsInput,
+      );
+    }
+    return renderWithCanvasText(renderFunc, arg0 as CanvasLike, arg1 as string);
+  }
+  if (arg1 !== undefined) {
+    return renderWithTextOpts(renderFunc, arg0 as string, arg1 as RendererOptionsInput);
+  }
+  return renderWithText(renderFunc, arg0 as string);
+}
+
+export default class QRCode {
+  static create = QRCodeCore.create;
+  static toCanvas = dispatchRender.bind(
+    null,
+    (data: QRCodeCreateResult, canvas: CanvasLike | undefined, opts?: RendererOptionsInput) =>
+      CanvasRenderer.render(data, canvas, opts),
+  ) as ToRenderMethod;
+  static toDataURL = dispatchRender.bind(
+    null,
+    (data: QRCodeCreateResult, canvas: CanvasLike | undefined, opts?: RendererOptionsInput) =>
+      CanvasRenderer.renderToDataURL(data, canvas, opts),
+  ) as ToRenderMethod;
+  static toString = dispatchRender.bind(
+    null,
+    (data: QRCodeCreateResult, _: CanvasLike | undefined, opts?: RendererOptionsInput) =>
+      SvgRenderer.render(data, opts),
+  ) as ToRenderMethod;
+}

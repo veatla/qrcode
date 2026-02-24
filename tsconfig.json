@@ -2,7 +2,10 @@
   "compilerOptions": {
     "target": "ES2018",
     "module": "ESNext",
-    "lib": ["ES2018"],
+    "lib": [
+      "dom",
+      "es2016"
+    ],
     "outDir": "dist",
     "rootDir": "lib",
     "strict": true,
@@ -14,6 +17,15 @@
     "sourceMap": true,
     "moduleResolution": "node"
   },
-  "include": ["lib/**/*.ts"],
-  "exclude": ["node_modules", "dist", "build", "test", "examples"]
+  "include": [
+    "lib/**/*.ts",
+    "lib/helper/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "test",
+    "examples"
+  ]
 }

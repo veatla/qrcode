@@ -22,20 +22,27 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
+      "types": "./dist/qrcode.d.ts",
       "browser": {
         "types": "./dist/browser.d.ts",
         "default": "./dist/browser.js"
-      }
+      },
+      "import": "./dist/browser.js",
+      "require": "./dist/browser.js"
+    },
+    "./to-sjis": {
+      "types": "./dist/helper/to-sjis.d.ts",
+      "browser": {
+        "types": "./dist/helper/to-sjis.d.ts",
+        "default": "./dist/qrcode.tosjis.js"
+      },
+      "default": "./dist/qrcode.tosjis.js"
     }
   },
   "files": [
     "bin",
     "build",
-    "dist",
-    "helper"
+    "dist"
   ],
   "homepage": "http://github.com/soldair/node-qrcode",
   "license": "MIT",
@@ -43,7 +50,7 @@
     "format": "prettier --write .",
     "pretest": "npm run format",
     "test": "node --throw-deprecation test.js",
-    "build": "pkgroll --srcdist lib:dist && rollup -c",
+    "build": "rollup -c",
     "typecheck": "tsc --noEmit",
     "prepublish": "npm run build",
     "browser": "node examples/clientsideserver.js"
@@ -63,6 +70,7 @@
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.3.0",
     "@types/node": "^25.3.0",
     "@types/pngjs": "^6.0.5",
     "browserify": "^17.0.1",
@@ -71,11 +79,12 @@
     "colors": "^1.4.0",
     "express": "^5.2.1",
     "htmlparser2": "^10.1.0",
-    "pkgroll": "^2.26.3",
     "prettier": "^3.8.1",
     "rollup": "^4.59.0",
+    "rollup-plugin-dts": "^6.3.0",
     "sinon": "^21.0.1",
     "tap": "^21.6.2",
+    "tslib": "^2.8.1",
     "typescript": "^5.9.3"
   },
   "repository": {

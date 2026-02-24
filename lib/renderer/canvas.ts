@@ -1,35 +1,32 @@
 import type { QRCodeCreateResult } from "../core/qrcode";
 import * as Utils from "./utils";
 
-export interface CanvasLike {
-  canvas: {};
-  getContext(contextId: "2d"): {
-    clearRect(x: number, y: number, w: number, h: number): void;
-    createImageData(w: number, h: number): { data: Uint8ClampedArray };
-    putImageData(
-      imagedata: { data: Uint8ClampedArray },
-      x: number,
-      y: number,
-    ): void;
-  };
-  width: number;
-  height: number;
-  style?: { width?: string; height?: string };
-  toDataURL(type?: string, quality?: number): string;
-}
+export type CanvasLike = HTMLCanvasElement;
+// {
+//   canvas: {};
+//   getContext(contextId: "2d"): {
+//     clearRect(x: number, y: number, w: number, h: number): void;
+//     createImageData(w: number, h: number): { data: Uint8ClampedArray };
+//     putImageData(
+//       imagedata: { data: Uint8ClampedArray },
+//       x: number,
+//       y: number,
+//     ): void;
+//   };
+//   width: number;
+//   height: number;
+//   style?: { width?: string; height?: string };
+//   toDataURL(type?: string, quality?: number): string;
+// }
 
-function clearCanvas(
-  ctx: ReturnType<CanvasLike["getContext"]>,
-  canvas: CanvasLike,
-  size: number,
-): void {
+function clearCanvas(ctx: CanvasRenderingContext2D | null, canvas: CanvasLike, size: number): void {
+  if (!ctx) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (!canvas.style) canvas.style = {};
   canvas.height = size;
   canvas.width = size;
-  canvas.style!.height = size + "px";
-  canvas.style!.width = size + "px";
+  canvas.style.height = size + "px";
+  canvas.style.width = size + "px";
 }
 
 declare const document: { createElement(tag: string): CanvasLike } | undefined;
@@ -67,17 +64,15 @@ export function render(
     canvasEl = getCanvasElement();
   }
 
-  opts = Utils.getOptions(
-    opts as unknown as Parameters<typeof Utils.getOptions>[0],
-  );
+  opts = Utils.getOptions(opts as unknown as Parameters<typeof Utils.getOptions>[0]);
   const size = Utils.getImageWidth(qrData.modules.size, opts);
 
-  const ctx = canvasEl.getContext("2d");
+  const ctx = canvasEl.getContext("2d")!;
   const image = ctx.createImageData(size, size);
   Utils.qrToImageData(image.data, qrData, opts);
 
   clearCanvas(ctx, canvasEl, size);
-  ctx.putImageData(image, 0, 0);
+  ctx!.putImageData(image, 0, 0);
 
   return canvasEl;
 }

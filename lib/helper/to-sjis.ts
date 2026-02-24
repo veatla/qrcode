@@ -301,21 +301,18 @@ const SJIS_UTF8 = [
     0xea40,
     "鵝鵞鵤鵑鵐鵙鵲鶉鶇鶫鵯鵺鶚鶤鶩鶲鷄鷁鶻鶸鶺鷆鷏鷂鷙鷓鷸鷦鷭鷯鷽鸚鸛鸞鹵鹹鹽麁麈麋麌麒麕麑麝麥麩麸麪麭靡黌黎黏黐黔黜點黝黠黥黨黯",
   ],
-  [
-    0xea80,
-    "黴黶黷黹黻黼黽鼇鼈皷鼕鼡鼬鼾齊齒齔齣齟齠齡齦齧齬齪齷齲齶龕龜龠堯槇遙瑤凜熙",
-  ],
+  [0xea80, "黴黶黷黹黻黼黽鼇鼈皷鼕鼡鼬鼾齊齒齔齣齟齠齡齦齧齬齪齷齲齶龕龜龠堯槇遙瑤凜熙"],
 ];
 
-module.exports = function toSJIS(utf8Char) {
+export default function toSJIS(utf8Char: string) {
   if (!utf8Char || utf8Char === "") return;
 
   for (let i = 0; i < SJIS_UTF8.length; i++) {
-    const kanji = SJIS_UTF8[i][1];
+    const kanji = SJIS_UTF8[i][1] as string;
 
-    const posIndex = kanji.indexOf(utf8Char);
+    const posIndex = kanji.indexOf(utf8Char as string);
     if (posIndex >= 0) {
-      return SJIS_UTF8[i][0] + posIndex;
+      return (SJIS_UTF8[i][0] as number) + posIndex;
     }
   }
-};
+}

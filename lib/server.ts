@@ -1,10 +1,11 @@
 import canPromise from "./can-promise";
-import * as QRCode from "./core/qrcode";
+import * as QRCodeCore from "./core/qrcode";
 import * as PngRenderer from "./renderer/png";
 import * as Utf8Renderer from "./renderer/utf8";
 import * as TerminalRenderer from "./renderer/terminal";
 import * as SvgRenderer from "./renderer/svg";
 import type { QRCodeOptions } from "./types";
+import QRCode from "./browser";
 
 interface CheckParamsResult {
   opts: QRCodeOptions;
@@ -86,7 +87,7 @@ function render<T = unknown>(
   if (!params.cb) {
     return new Promise<T>((resolve, reject) => {
       try {
-        const data = QRCode.create(text, params.opts);
+        const data = QRCodeCore.create(text, params.opts);
         return renderFunc(data, params.opts, (err, data) => {
           return err ? reject(err) : resolve(data);
         });
@@ -97,16 +98,16 @@ function render<T = unknown>(
   }
 
   try {
-    const data = QRCode.create(text, params.opts);
+    const data = QRCodeCore.create(text, params.opts);
     return renderFunc(data, params.opts, params.cb);
   } catch (e) {
     params.cb?.(e as Error, null);
   }
 }
 
-export const create = QRCode.create;
+export const create = QRCodeCore.create;
 
-export { toCanvas } from "./browser";
+export const toCanvas = QRCode.toCanvas;
 
 export function toString(
   text: string,
@@ -146,8 +147,7 @@ export function toDataURL(
     return render<string>(
       (data, _opts, cb) => {
         const svgStr = SvgRenderer.render(data, params.opts);
-        const dataUrl =
-          "data:image/svg+xml;base64," + Buffer.from(svgStr).toString("base64");
+        const dataUrl = "data:image/svg+xml;base64," + Buffer.from(svgStr).toString("base64");
         cb(null, dataUrl);
       },
       text,
@@ -203,10 +203,7 @@ export function toFile(
   opts?: QRCodeOptions | ((err: Error | null) => void),
   cb?: (err: Error | null) => void,
 ): Promise<void> | void {
-  if (
-    typeof path !== "string" ||
-    !(typeof text === "string" || typeof text === "object")
-  ) {
+  if (typeof path !== "string" || !(typeof text === "string" || typeof text === "object")) {
     throw new Error("Invalid argument");
   }
 
@@ -248,15 +245,9 @@ export function toFileStream(
   const params = checkParams(
     text,
     opts as QRCodeOptions,
-    stream.emit.bind(stream, "error") as (
-      err: Error | null,
-      result: unknown,
-    ) => void,
+    stream.emit.bind(stream, "error") as (err: Error | null, result: unknown) => void,
   );
-  const renderToFileStream = PngRenderer.renderToFileStream.bind(
-    PngRenderer,
-    stream,
-  );
+  const renderToFileStream = PngRenderer.renderToFileStream.bind(PngRenderer, stream);
   render(
     renderToFileStream as (
       data: import("./core/qrcode").QRCodeCreateResult,
