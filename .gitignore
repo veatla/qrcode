@@ -3,3 +3,7 @@ node_modules
 coverage
 .nyc_output
 build
+
+.tap
+dist
+playground
