@@ -28,7 +28,12 @@ export default [
         exports: "default",
       },
     ],
-    plugins: [typescript(), resolve(), babel(babelConfig), terser()],
+    plugins: [
+      typescript({ tsconfig: "tsconfig.base.json" }),
+      resolve(),
+      babel(babelConfig),
+      terser(),
+    ],
   },
   {
     input: "lib/browser.ts",
@@ -47,6 +52,11 @@ export default [
       name: "QRCodeToSJIS",
       exports: "default",
     },
-    plugins: [typescript(), resolve(), babel(babelConfig), terser()],
+    plugins: [
+      typescript({ tsconfig: "tsconfig.base.json" }),
+      resolve(),
+      babel(babelConfig),
+      terser(),
+    ],
   },
 ];

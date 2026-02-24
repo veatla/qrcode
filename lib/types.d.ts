@@ -15,6 +15,6 @@ export interface QRCodeOptions {
   version?: number;
   errorCorrectionLevel?: string | ECLevel;
   maskPattern?: number;
-  toSJISFunc?: (codePoint: number) => number;
+  toSJISFunc?: (codePoint: string) => number;
   type?: "png" | "svg" | "utf8" | "txt" | "image/png";
 }
