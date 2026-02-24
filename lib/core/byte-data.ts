@@ -1,5 +1,5 @@
 import type BitBuffer from "./bit-buffer";
-import { BYTE } from "./mode";
+import { BYTE } from "./mode.js";
 
 export default class ByteData {
   mode = BYTE;

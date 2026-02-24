@@ -1,5 +1,5 @@
 export default class BitBuffer {
-  buffer: number[] = [];
+  buffer: Uint8ClampedArray = new Uint8ClampedArray([]);
   length = 0;
 
   get(index: number): boolean {
@@ -20,7 +20,9 @@ export default class BitBuffer {
   putBit(bit: boolean): void {
     const bufIndex = Math.floor(this.length / 8);
     if (this.buffer.length <= bufIndex) {
-      this.buffer.push(0);
+      const newBuffer = new Uint8ClampedArray(this.buffer.length + 1);
+      newBuffer.set(this.buffer);
+      this.buffer = newBuffer;
     }
 
     if (bit) {

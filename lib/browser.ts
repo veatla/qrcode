@@ -1,8 +1,8 @@
-import canPromise from "./can-promise";
-import * as QRCodeCore from "./core/qrcode";
-import * as CanvasRenderer from "./renderer/canvas";
-import * as SvgRenderer from "./renderer/svg-tag";
-import * as RendererUtils from "./renderer/utils";
+import canPromise from "./can-promise.js";
+import * as QRCodeCore from "./core/qrcode.js";
+import * as CanvasRenderer from "./renderer/canvas.js";
+import * as SvgRenderer from "./renderer/svg-tag.js";
+import * as RendererUtils from "./renderer/utils.js";
 import type { QRCodeCreateResult } from "./core/qrcode";
 import type { CanvasLike } from "./renderer/canvas";
 import type { QRCodeOptions } from "./types";
@@ -243,6 +243,10 @@ function dispatchRender(
   }
   if (arg1 !== undefined) {
     return renderWithTextOpts(renderFunc, arg0 as string, arg1 as RendererOptionsInput);
+  }
+
+  if (!arg0 || typeof arg0 !== "string") {
+    throw new Error("String required as first argument");
   }
   return renderWithText(renderFunc, arg0 as string);
 }

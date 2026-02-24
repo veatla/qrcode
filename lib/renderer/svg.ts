@@ -1,6 +1,6 @@
 import type { QRCodeCreateResult } from "../core/qrcode";
 import fs from "fs";
-import * as svgTagRenderer from "./svg-tag";
+import * as svgTagRenderer from "./svg-tag.js";
 
 export const render = svgTagRenderer.render;
 

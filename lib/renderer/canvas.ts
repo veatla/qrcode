@@ -1,5 +1,5 @@
 import type { QRCodeCreateResult } from "../core/qrcode";
-import * as Utils from "./utils";
+import * as Utils from "./utils.js";
 
 export type CanvasLike = HTMLCanvasElement;
 // {
@@ -25,8 +25,13 @@ function clearCanvas(ctx: CanvasRenderingContext2D | null, canvas: CanvasLike, s
 
   canvas.height = size;
   canvas.width = size;
-  canvas.style.height = size + "px";
-  canvas.style.width = size + "px";
+  if (canvas.style) {
+    canvas.style.height = size + "px";
+    canvas.style.width = size + "px";
+  } else {
+    // @ts-expect-error
+    canvas.style = { width: size + "px", height: size + "px" };
+  }
 }
 
 declare const document: { createElement(tag: string): CanvasLike } | undefined;

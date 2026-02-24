@@ -1,3 +1,4 @@
+import type { createWriteStream } from "fs";
 import type { QRCodeCreateResult } from "../core/qrcode";
 
 export interface RGBA {
@@ -56,19 +57,17 @@ export function getOptions(options?: {
   color?: { dark?: string; light?: string };
   type?: string;
   rendererOpts?: Record<string, unknown>;
+  createStream?: typeof createWriteStream;
 }): RendererOptions {
   if (!options) options = {};
-  if (!options.color) options.color = {};
+  if (!options?.color) options.color = {};
 
   const margin =
-    typeof options.margin === "undefined" ||
-    options.margin === null ||
-    options.margin < 0
+    typeof options.margin === "undefined" || options.margin === null || options.margin < 0
       ? 4
       : options.margin;
 
-  const width =
-    options.width && options.width >= 21 ? options.width : undefined;
+  const width = options.width && options.width >= 21 ? options.width : undefined;
   const scale = options.scale ?? 4;
 
   return {

@@ -1,4 +1,4 @@
-import * as Polynomial from "./polynomial";
+import * as Polynomial from "./polynomial.js";
 
 export default class ReedSolomonEncoder {
   genPoly: Uint8Array | undefined;

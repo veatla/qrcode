@@ -1,4 +1,4 @@
-import { getSymbolSize } from "./utils";
+import { getSymbolSize } from "./utils.js";
 
 export function getRowColCoords(version: number): number[] {
   if (version === 1) return [];

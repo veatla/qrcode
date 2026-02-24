@@ -1,6 +1,6 @@
 import type { QRCodeCreateResult } from "../core/qrcode";
 import fs from "fs";
-import * as Utils from "./utils";
+import * as Utils from "./utils.js";
 
 const BLOCK_CHAR = {
   WW: " ",

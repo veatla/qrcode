@@ -7,7 +7,9 @@ import babel from "@rollup/plugin-babel";
 
 const babelConfig = {
   babelrc: false,
-  presets: [["@babel/preset-env", { targets: "defaults, IE >= 10, Safari >= 5.1" }]],
+  presets: [
+    ["@babel/preset-env", { targets: "defaults, IE >= 10, Safari >= 5.1" }],
+  ],
 };
 
 export default [

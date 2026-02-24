@@ -1,7 +1,8 @@
+import * as fileSystem from "../helper/fileSystem.js";
 import fs from "fs";
 import { PNG } from "pngjs";
 import type { QRCodeCreateResult } from "../core/qrcode";
-import * as Utils from "./utils";
+import * as Utils from "./utils.js";
 
 export function render(
   qrData: QRCodeCreateResult,
@@ -15,11 +16,7 @@ export function render(
   pngOpts.height = size;
 
   const pngImage = new PNG(pngOpts);
-  Utils.qrToImageData(
-    pngImage.data as unknown as Uint8ClampedArray,
-    qrData,
-    opts,
-  );
+  Utils.qrToImageData(pngImage.data as unknown as Uint8ClampedArray, qrData, opts);
 
   return pngImage;
 }
@@ -36,25 +33,19 @@ export function renderToDataURL(
     options = undefined;
   }
 
-  renderToBuffer(
-    qrData,
-    options as Parameters<typeof Utils.getOptions>[0],
-    (err, output) => {
-      if (err) {
-        cb!(err, null);
-        return;
-      }
-      const url = "data:image/png;base64," + output.toString("base64");
-      cb!(null, url as string);
-    },
-  );
+  renderToBuffer(qrData, options as Parameters<typeof Utils.getOptions>[0], (err, output) => {
+    if (err) {
+      cb!(err, null);
+      return;
+    }
+    const url = "data:image/png;base64," + output.toString("base64");
+    cb!(null, url as string);
+  });
 }
 
 export function renderToBuffer(
   qrData: QRCodeCreateResult,
-  options:
-    | Parameters<typeof Utils.getOptions>[0]
-    | ((err: Error | null, buffer: Buffer) => void),
+  options: Parameters<typeof Utils.getOptions>[0] | ((err: Error | null, buffer: Buffer) => void),
   cb?: (err: Error | null, buffer: Buffer) => void,
 ): void {
   if (typeof cb === "undefined") {
@@ -81,9 +72,7 @@ export function renderToBuffer(
 export function renderToFile(
   path: string,
   qrData: QRCodeCreateResult,
-  options:
-    | Parameters<typeof Utils.getOptions>[0]
-    | ((err: Error | null) => void),
+  options: Parameters<typeof Utils.getOptions>[0] | ((err: Error | null) => void),
   cb?: (err: Error | null) => void,
 ): void {
   if (typeof cb === "undefined") {
@@ -91,22 +80,20 @@ export function renderToFile(
     options = undefined;
   }
 
+  if (options instanceof Function) throw new Error("Callback is not a function");
+
   let called = false;
   const done = (...args: unknown[]) => {
     if (called) return;
     called = true;
     (cb as (...a: unknown[]) => void).apply(null, args);
   };
-  const stream = fs.createWriteStream(path);
+  const stream = (options?.createStream ?? fileSystem.createWriteStream)(path);
 
   stream.on("error", done);
   stream.on("close", done);
 
-  renderToFileStream(
-    stream,
-    qrData,
-    options as Parameters<typeof Utils.getOptions>[0],
-  );
+  renderToFileStream(stream, qrData, options as Parameters<typeof Utils.getOptions>[0]);
 }
 
 export function renderToFileStream(

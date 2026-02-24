@@ -1,4 +1,4 @@
-import * as GF from "./galois-field";
+import * as GF from "./galois-field.js";
 
 export function mul(p1: Uint8Array, p2: Uint8Array): Uint8Array {
   const coeff = new Uint8Array(p1.length + p2.length - 1);

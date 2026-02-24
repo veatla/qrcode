@@ -1,5 +1,5 @@
 import type BitBuffer from "./bit-buffer";
-import { NUMERIC } from "./mode";
+import { NUMERIC } from "./mode.js";
 
 export default class NumericData {
   mode = NUMERIC;

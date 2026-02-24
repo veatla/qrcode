@@ -1,4 +1,8 @@
-let toSJISFunction: ((codePoint: number) => number) | undefined;
+const SJIS: {
+  format: ((kanji: string) => number) | undefined;
+} = {
+  format: undefined,
+};
 
 const CODEWORDS_COUNT = [
   0, // Not used
@@ -46,8 +50,7 @@ const CODEWORDS_COUNT = [
 
 export function getSymbolSize(version: number): number {
   if (!version) throw new Error('"version" cannot be null or undefined');
-  if (version < 1 || version > 40)
-    throw new Error('"version" should be in range from 1 to 40');
+  if (version < 1 || version > 40) throw new Error('"version" should be in range from 1 to 40');
   return version * 4 + 17;
 }
 
@@ -65,18 +68,18 @@ export function getBCHDigit(data: number): number {
   return digit;
 }
 
-export function setToSJISFunction(f: (codePoint: number) => number): void {
+export function setToSJISFunction(f: (kanji: string) => number): void {
   if (typeof f !== "function") {
     throw new Error('"toSJISFunc" is not a valid function.');
   }
-  toSJISFunction = f;
+  SJIS.format = f;
 }
 
 export function isKanjiModeEnabled(): boolean {
-  return typeof toSJISFunction !== "undefined";
+  return typeof SJIS.format !== "undefined";
 }
 
-export function toSJIS(kanji: number): number {
-  if (!toSJISFunction) throw new Error("toSJIS function is not set");
-  return toSJISFunction(kanji);
+export function toSJIS(kanji: string): number {
+  if (!SJIS.format) throw new Error("toSJIS function is not set");
+  return SJIS.format(kanji);
 }

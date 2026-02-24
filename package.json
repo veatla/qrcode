@@ -52,7 +52,7 @@
   "scripts": {
     "format": "prettier --write .",
     "pretest": "npm run format",
-    "test": "node --throw-deprecation test.js",
+    "test": "node --throw-deprecation test.cjs",
     "build": "rollup -c",
     "typecheck": "tsc --noEmit",
     "prepublish": "npm run build",
@@ -87,6 +87,7 @@
     "rollup-plugin-dts": "^6.3.0",
     "sinon": "^21.0.1",
     "tap": "^21.6.2",
+    "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "typescript": "^5.9.3"
   },

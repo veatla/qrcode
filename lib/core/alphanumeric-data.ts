@@ -1,5 +1,5 @@
 import type BitBuffer from "./bit-buffer";
-import { ALPHANUMERIC } from "./mode";
+import { ALPHANUMERIC } from "./mode.js";
 
 const ALPHA_NUM_CHARS = [
   "0",

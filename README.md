@@ -115,10 +115,14 @@ QRCode.toCanvas(canvas, "sample text", function (error) {
 
 <script src="/build/qrcode.js"></script>
 <script>
-  QRCode.toCanvas(document.getElementById("canvas"), "sample text", function (error) {
-    if (error) console.error(error);
-    console.log("success!");
-  });
+  QRCode.toCanvas(
+    document.getElementById("canvas"),
+    "sample text",
+    function (error) {
+      if (error) console.error(error);
+      console.log("success!");
+    },
+  );
 </script>
 ```
 
@@ -198,9 +202,13 @@ Error level can be set through `options.errorCorrectionLevel` property.<br>
 If not specified, the default value is `M`.
 
 ```javascript
-QRCode.toDataURL("some text", { errorCorrectionLevel: "H" }, function (err, url) {
-  console.log(url);
-});
+QRCode.toDataURL(
+  "some text",
+  { errorCorrectionLevel: "H" },
+  function (err, url) {
+    console.log(url);
+  },
+);
 ```
 
 ## QR Code capacity

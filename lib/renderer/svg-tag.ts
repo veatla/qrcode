@@ -1,6 +1,6 @@
 import type { QRCodeCreateResult } from "../core/qrcode";
 import type { RGBA } from "./utils";
-import * as Utils from "./utils";
+import * as Utils from "./utils.js";
 
 function getColorAttrib(color: RGBA, attrib: string): string {
   const alpha = color.a / 255;

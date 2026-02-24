@@ -1,12 +1,12 @@
 import type { Mode } from "../types";
-import * as ModeModule from "./mode";
-import NumericData from "./numeric-data";
-import AlphanumericData from "./alphanumeric-data";
-import ByteData from "./byte-data";
-import KanjiData from "./kanji-data";
-import * as Regex from "./regex";
-import * as Utils from "./utils";
-import * as dijkstra from "./dijkstrajs";
+import * as ModeModule from "./mode.js";
+import NumericData from "./numeric-data.js";
+import AlphanumericData from "./alphanumeric-data.js";
+import ByteData from "./byte-data.js";
+import KanjiData from "./kanji-data.js";
+import * as Regex from "./regex.js";
+import * as Utils from "./utils.js";
+import * as dijkstra from "./dijkstrajs.js";
 
 export interface SegmentData {
   data: string;

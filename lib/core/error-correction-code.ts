@@ -1,5 +1,5 @@
 import type { ECLevel } from "../types";
-import { L, M, Q, H } from "./error-correction-level";
+import { L, M, Q, H } from "./error-correction-level.js";
 
 const EC_BLOCKS_TABLE = [
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 4, 1, 2, 4, 4, 2, 4, 4, 4, 2, 4,

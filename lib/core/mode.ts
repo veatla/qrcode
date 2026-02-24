@@ -1,6 +1,6 @@
 import type { Mode } from "../types";
-import * as VersionCheck from "./version-check";
-import * as Regex from "./regex";
+import * as VersionCheck from "./version-check.js";
+import * as Regex from "./regex.js";
 
 export const NUMERIC: Mode = {
   id: "Numeric",

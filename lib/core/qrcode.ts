@@ -1,18 +1,18 @@
 import type { ECLevel } from "../types";
 import type { QRCodeOptions } from "../types";
-import * as Utils from "./utils";
-import * as ECLevelModule from "./error-correction-level";
-import BitBuffer from "./bit-buffer";
-import BitMatrix from "./bit-matrix";
-import * as AlignmentPattern from "./alignment-pattern";
-import * as FinderPattern from "./finder-pattern";
-import * as MaskPattern from "./mask-pattern";
-import * as ECCode from "./error-correction-code";
-import ReedSolomonEncoder from "./reed-solomon-encoder";
-import * as Version from "./version";
-import * as FormatInfo from "./format-info";
-import * as Mode from "./mode";
-import * as Segments from "./segments";
+import * as Utils from "./utils.js";
+import * as ECLevelModule from "./error-correction-level.js";
+import BitBuffer from "./bit-buffer.js";
+import BitMatrix from "./bit-matrix.js";
+import * as AlignmentPattern from "./alignment-pattern.js";
+import * as FinderPattern from "./finder-pattern.js";
+import * as MaskPattern from "./mask-pattern.js";
+import * as ECCode from "./error-correction-code.js";
+import ReedSolomonEncoder from "./reed-solomon-encoder.js";
+import * as Version from "./version.js";
+import * as FormatInfo from "./format-info.js";
+import * as Mode from "./mode.js";
+import * as Segments from "./segments.js";
 import type { Segment } from "./segments";
 
 export interface QRCodeCreateResult {

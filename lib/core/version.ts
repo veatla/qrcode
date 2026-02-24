@@ -1,10 +1,10 @@
 import type { ECLevel } from "../types";
 import type { Mode } from "../types";
-import * as Utils from "./utils";
-import * as ECCode from "./error-correction-code";
-import * as ECLevelModule from "./error-correction-level";
-import * as ModeModule from "./mode";
-import * as VersionCheck from "./version-check";
+import * as Utils from "./utils.js";
+import * as ECCode from "./error-correction-code.js";
+import * as ECLevelModule from "./error-correction-level.js";
+import * as ModeModule from "./mode.js";
+import * as VersionCheck from "./version-check.js";
 
 const G18 =
   (1 << 12) |

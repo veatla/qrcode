@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "strict": false,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "$lib": [
+        "./lib/index.ts"
+      ],
+      "$lib/*": [
+        "./lib/*"
+      ]
+    }
+  },
+  "include": [
+    "test/**/*.ts",
+    "lib/helper/fileSystem.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "lib",
+    "examples"
+  ]
+}
