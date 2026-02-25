@@ -3,8 +3,6 @@ import { toDataURL } from "../../lib/index.js";
 import Browser from "../../lib/browser.js";
 import { createCanvas } from "canvas";
 import { removeNativePromise, restoreNativePromise } from "../helpers.js";
-import { writeFile } from "fs";
-import { join } from "path";
 
 test("toDataURL - no promise available", function (t) {
   removeNativePromise();

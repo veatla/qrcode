@@ -1,5 +1,4 @@
-import stream from "stream";
-import util from "util";
+import * as stream from "stream";
 
 // function WritableStream() {
 //   stream.Writable.call(this);

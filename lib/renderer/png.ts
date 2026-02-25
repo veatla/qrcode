@@ -1,13 +1,13 @@
 import * as fileSystem from "../helper/fileSystem.js";
-import fs from "fs";
-import { PNG } from "pngjs";
+// import * as PNG from "pngjs";
+import * as PNG from "pngjs";
 import type { QRCodeCreateResult } from "../core/qrcode";
 import * as Utils from "./utils.js";
 
 export function render(
   qrData: QRCodeCreateResult,
   options?: Parameters<typeof Utils.getOptions>[0],
-): InstanceType<typeof PNG> {
+): InstanceType<typeof PNG.PNG> {
   const opts = Utils.getOptions(options);
   const pngOpts = opts.rendererOpts as { width?: number; height?: number };
   const size = Utils.getImageWidth(qrData.modules.size, opts);
@@ -15,7 +15,7 @@ export function render(
   pngOpts.width = size;
   pngOpts.height = size;
 
-  const pngImage = new PNG(pngOpts);
+  const pngImage = new PNG.PNG(pngOpts);
   Utils.qrToImageData(pngImage.data as unknown as Uint8ClampedArray, qrData, opts);
 
   return pngImage;
@@ -88,7 +88,11 @@ export function renderToFile(
     called = true;
     (cb as (...a: unknown[]) => void).apply(null, args);
   };
-  const stream = (options?.createStream ?? fileSystem.createWriteStream)(path);
+  const fs = (options?.createStream ?? fileSystem.createWriteStream) as (
+    path: string,
+  ) => NodeJS.WritableStream;
+
+  const stream = fs(path);
 
   stream.on("error", done);
   stream.on("close", done);

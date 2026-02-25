@@ -1,5 +1,5 @@
 import type { QRCodeCreateResult } from "../core/qrcode";
-import fs from "fs";
+import * as fs from "fs";
 import * as svgTagRenderer from "./svg-tag.js";
 
 export const render = svgTagRenderer.render;
@@ -17,10 +17,7 @@ export function renderToFile(
     options = undefined;
   }
 
-  const svgTag = render(
-    qrData,
-    options as Parameters<typeof svgTagRenderer.render>[1],
-  );
+  const svgTag = render(qrData, options as Parameters<typeof svgTagRenderer.render>[1]);
 
   const xmlStr =
     '<?xml version="1.0" encoding="utf-8"?>' +

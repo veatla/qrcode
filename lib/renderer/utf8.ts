@@ -1,5 +1,5 @@
 import type { QRCodeCreateResult } from "../core/qrcode";
-import fs from "fs";
+import * as fs from "fs";
 import * as Utils from "./utils.js";
 
 const BLOCK_CHAR = {
@@ -16,11 +16,7 @@ const INVERTED_BLOCK_CHAR = {
   WB: "▀",
 };
 
-function getBlockChar(
-  top: number,
-  bottom: number,
-  blocks: typeof BLOCK_CHAR,
-): string {
+function getBlockChar(top: number, bottom: number, blocks: typeof BLOCK_CHAR): string {
   if (top && bottom) return blocks.BB;
   if (top && !bottom) return blocks.BW;
   if (!top && bottom) return blocks.WB;
@@ -72,9 +68,7 @@ export function render(
 export function renderToFile(
   path: string,
   qrData: QRCodeCreateResult,
-  options:
-    | Parameters<typeof Utils.getOptions>[0]
-    | ((err: NodeJS.ErrnoException | null) => void),
+  options: Parameters<typeof Utils.getOptions>[0] | ((err: NodeJS.ErrnoException | null) => void),
   cb?: (err: NodeJS.ErrnoException | null) => void,
 ): void {
   if (typeof cb === "undefined") {
@@ -82,9 +76,6 @@ export function renderToFile(
     options = undefined;
   }
 
-  const utf8 = render(
-    qrData,
-    options as Parameters<typeof Utils.getOptions>[0],
-  );
+  const utf8 = render(qrData, options as Parameters<typeof Utils.getOptions>[0]);
   fs.writeFile(path, utf8, cb!);
 }

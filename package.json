@@ -1,7 +1,7 @@
 {
   "name": "@veatla/qrcode",
   "description": "QRCode / 2d Barcode api with both server side and client side support using canvas",
-  "version": "1.5.4",
+  "version": "1.5.5",
   "private": false,
   "author": [
     "Ryan Day <soldair@gmail.com>",
@@ -31,8 +31,8 @@
         "types": "./dist/browser.d.ts",
         "default": "./dist/browser.js"
       },
-      "import": "./dist/browser.js",
-      "require": "./dist/browser.js"
+      "import": "./dist/qrcode.js",
+      "require": "./dist/qrcode.js"
     },
     "./to-sjis": {
       "types": "./dist/helper/to-sjis.d.ts",
@@ -60,7 +60,7 @@
     "browser": "node examples/clientsideserver.js"
   },
   "bin": {
-    "qrcode": "./bin/qrcode"
+    "qrcode": "./bin/qrcode.cjs"
   },
   "dependencies": {
     "dijkstrajs": "^1.0.3",

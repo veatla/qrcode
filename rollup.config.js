@@ -7,9 +7,7 @@ import babel from "@rollup/plugin-babel";
 
 const babelConfig = {
   babelrc: false,
-  presets: [
-    ["@babel/preset-env", { targets: "defaults, IE >= 10, Safari >= 5.1" }],
-  ],
+  presets: [["@babel/preset-env", { targets: "defaults, IE >= 10, Safari >= 5.1" }]],
 };
 
 export default [
@@ -55,6 +53,22 @@ export default [
     plugins: [
       typescript({ tsconfig: "tsconfig.base.json" }),
       resolve(),
+      babel(babelConfig),
+      terser(),
+    ],
+  },
+  {
+    input: "lib/index.ts",
+    output: {
+      dir: "dist",
+      format: "cjs",
+      entryFileNames: "[name].cjs",
+      chunkFileNames: "[name]-[hash].cjs",
+    },
+    plugins: [
+      typescript({ tsconfig: "tsconfig.base.json" }),
+      resolve(),
+      commonjs(),
       babel(babelConfig),
       terser(),
     ],

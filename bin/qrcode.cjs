@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 var yargs = require("yargs");
-var qr = require("../dist");
-
+var qr = require("../dist/index.cjs");
 function save(file, text, options) {
   qr.toFile(file, text, options, function (err, data) {
     if (err) {
@@ -42,10 +41,10 @@ function parseOptions(args) {
     },
   };
 }
-
+const argsx = yargs(process.argv.slice(2));
 function processInputs(text, opts) {
   if (!text.length) {
-    yargs.showHelp();
+    argsx.showHelp();
     process.exit(1);
   }
 
@@ -56,7 +55,7 @@ function processInputs(text, opts) {
   }
 }
 
-var argv = yargs
+var argv = argsx
   .detectLocale(false)
   .usage("Usage: $0 [options] <input string>")
   .option("v", {

@@ -1,4 +1,3 @@
-import type { createWriteStream } from "fs";
 import type { QRCodeCreateResult } from "../core/qrcode";
 
 export interface RGBA {
@@ -57,7 +56,7 @@ export function getOptions(options?: {
   color?: { dark?: string; light?: string };
   type?: string;
   rendererOpts?: Record<string, unknown>;
-  createStream?: typeof createWriteStream;
+  createStream?: (path: string) => NodeJS.WritableStream;
 }): RendererOptions {
   if (!options) options = {};
   if (!options?.color) options.color = {};
